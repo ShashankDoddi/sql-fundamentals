@@ -1,2 +1,3 @@
-# sql-fundamentals
-SQL notes and worked solutions
+# SQL Fundamentals
+
+My notes as I learn SQL.
