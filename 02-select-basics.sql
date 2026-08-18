@@ -109,7 +109,7 @@ LIMIT 3;
 
 -- Q1. List every staff member at the Modbury site.
 
-SELECT * FROM staff where site = Modbury;
+SELECT * FROM staff where site = 'Modbury';
 -- Q2.  Show first name, last name and hourly rate for everyone
 --     earning less than $28 per hour.
 SELECT first_name, last_name, hourly_rate from staff where hourly_rate<28;
