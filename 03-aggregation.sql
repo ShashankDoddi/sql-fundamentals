@@ -116,34 +116,58 @@ ORDER BY overnight_count DESC;
 -- ============================================================
 
 -- Q1. How many shifts are in the shifts table altogether?
-
+SELECT COUNT(*) AS shift_count from shifts;
 
 -- Q2. What is the total number of hours worked across all shifts?
-
+SELECT sum(hours) AS hours_worked FROM shifts
 
 -- Q3. Show the average hourly rate for each site,
 --     rounded to two decimal places, highest first.
-
+SELECT site, ROUND(AVG(hourly_rate),2) AS avg_rate from staff
+GROUP BY site
+ORDER BY avg_rate DESC;
 
 -- Q4. Count how many staff hold each role.
-
+SELECT role, COUNT(*) AS staff_count
+FROM staff
+GROUP BY role;
 
 -- Q5. For each staff_id, show how many shifts they worked
 --     and their total hours, ordered by total hours descending.
-
+SELECT staff_id, 
+       COUNT(*) AS shifts_worked, 
+       SUM(hours) AS total_hours
+FROM shifts
+GROUP BY staff_id
+ORDER BY total_hours DESC;
 
 -- Q6. Which sites have an average hourly rate above 28?
-
+SELECT site, ROUND(AVG(hourly_rate), 2) AS avg_rate
+FROM staff
+GROUP BY site
+HAVING AVG(hourly_rate) > 28;
 
 -- Q7. Count the overnight shifts and the day shifts
 --     (hint: GROUP BY is_overnight).
-
+SELECT is_overnight, COUNT(*) AS shift_count
+FROM shifts
+GROUP BY is_overnight;
 
 -- Q8. Find staff_ids who worked three or more shifts.
-
+SELECT staff_id, COUNT(*) AS shifts_worked
+FROM shifts
+GROUP BY staff_id
+HAVING COUNT(*) >= 3;
 
 -- Q9. What is the longest single shift, and the shortest?
-
+SELECT MAX(hours) AS longest_shift, 
+       MIN(hours) AS shortest_shift
+FROM shifts;
 
 -- Q10. For overnight shifts only, show the total hours
 --      per staff_id, highest first.
+SELECT staff_id, SUM(hours) AS total_overnight_hours
+FROM shifts
+WHERE is_overnight = 1
+GROUP BY staff_id
+ORDER BY total_overnight_hours DESC;

@@ -123,27 +123,92 @@ ORDER BY wage_cost DESC;
 
 -- Q1. List every shift with the first name and last name of the
 --     person who worked it, plus the shift date and hours.
+SELECT st.first_name,
+       st.last_name,
+       sh.shift_date,
+       sh.hours
+FROM shifts AS sh
+INNER JOIN staff AS st
+  ON sh.staff_id = st.staff_id
+ORDER BY sh.shift_date;
 
 
 -- Q2. Show all overnight shifts with the worker's name and site.
+SELECT st.first_name,
+       st.last_name,
+       st.site,
+       sh.shift_date,
+       sh.hours
+FROM shifts AS sh
+INNER JOIN staff AS st
+  ON sh.staff_id = st.staff_id
+WHERE sh.is_overnight = 1
+ORDER BY sh.shift_date;
 
 
 -- Q3. For each site, count how many shifts were worked there.
+SELECT st.site,
+       COUNT(sh.shift_id) AS shifts_worked
+FROM staff AS st
+INNER JOIN shifts AS sh
+  ON st.staff_id = sh.staff_id
+GROUP BY st.site
+ORDER BY shifts_worked DESC;
 
 
 -- Q4. Show every staff member and their total hours, INCLUDING
 --     those who have worked none (they should show NULL or 0).
+SELECT st.first_name,
+       st.last_name,
+       COALESCE(SUM(sh.hours), 0) AS total_hours
+FROM staff AS st
+LEFT JOIN shifts AS sh
+  ON st.staff_id = sh.staff_id
+GROUP BY st.staff_id, st.first_name, st.last_name
+ORDER BY total_hours DESC;
 
 
 -- Q5. Which staff have never worked an overnight shift?
 --     (harder — think about where the is_overnight condition goes)
+SELECT st.first_name,
+       st.last_name,
+       st.site
+FROM staff AS st
+LEFT JOIN shifts AS sh
+  ON st.staff_id = sh.staff_id
+  AND sh.is_overnight = 1
+WHERE sh.shift_id IS NULL;
 
 
 -- Q6. List the top three people by total hours worked, with names.
+SELECT st.first_name,
+       st.last_name,
+       SUM(sh.hours) AS total_hours
+FROM staff AS st
+INNER JOIN shifts AS sh
+  ON st.staff_id = sh.staff_id
+GROUP BY st.staff_id, st.first_name, st.last_name
+ORDER BY total_hours DESC
+LIMIT 3;
+
 
 
 -- Q7. For each role, show the total hours worked by people in it.
+SELECT st.role,
+       SUM(sh.hours) AS total_hours
+FROM staff AS st
+INNER JOIN shifts AS sh
+  ON st.staff_id = sh.staff_id
+GROUP BY st.role
+ORDER BY total_hours DESC;
 
 
 -- Q8. Calculate the total estimated wage cost per site,
 --     rounded to two decimal places, highest first.
+SELECT st.site,
+       ROUND(SUM(sh.hours * st.hourly_rate), 2) AS total_wage_cost
+FROM staff AS st
+INNER JOIN shifts AS sh
+  ON st.staff_id = sh.staff_id
+GROUP BY st.site
+ORDER BY total_wage_cost DESC;
